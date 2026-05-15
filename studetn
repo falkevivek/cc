@@ -1,0 +1,206 @@
+Apex Controller (Correct)
+public class StudentController {
+
+    public Student__c student { get; set; }
+    public List<Student__c> studentList { get; set; }
+    public Boolean isEdit { get; set; }
+
+    public Id selectedId { get; set; }
+
+    // Constructor
+    public StudentController() {
+
+        student = new Student__c();
+        isEdit = false;
+
+        loadStudent();
+    }
+
+    // Load all students
+    public void loadStudent() {
+
+        studentList = [
+
+            SELECT Id,
+                   Name,
+                   Roll_No__c,
+                   Class__c,
+                   Mobile_No__c
+            FROM Student__c
+            ORDER BY CreatedDate DESC
+        ];
+    }
+
+    // Save or Update
+    public void saveButton() {
+
+        if(isEdit == false) {
+
+            insert student;
+
+        } else {
+
+            update student;
+            isEdit = false;
+        }
+
+        student = new Student__c();
+
+        loadStudent();
+    }
+
+    // Edit Student
+    public void editStudent() {
+
+        student = [
+
+            SELECT Id,
+                   Name,
+                   Roll_No__c,
+                   Class__c,
+                   Mobile_No__c
+            FROM Student__c
+            WHERE Id = :selectedId
+            LIMIT 1
+        ];
+
+        isEdit = true;
+    }
+
+    // Delete Student
+    public void deleteStudent() {
+
+        Student__c stu = [
+
+            SELECT Id
+            FROM Student__c
+            WHERE Id = :selectedId
+            LIMIT 1
+        ];
+
+        delete stu;
+
+        loadStudent();
+    }
+
+    // Cancel Edit
+    public void cancelEdit() {
+
+        student = new Student__c();
+
+        isEdit = false;
+    }
+}
+Visualforce Page (Correct)
+<apex:page controller="StudentController">
+
+    <apex:form>
+
+        <h1 style="font-size:25px; font-weight:bold;">
+            Student Record Management System
+        </h1>
+
+        <!-- FORM SECTION -->
+
+        <apex:pageBlock title="Add / Edit Student"
+                        id="studentForm">
+
+            <apex:pageBlockSection columns="1">
+
+                <!-- Name -->
+                <apex:inputText value="{!student.Name}"
+                                label="Student Name"/>
+
+                <!-- Roll Number -->
+                <apex:inputText value="{!student.Roll_No__c}"
+                                label="Roll No"/>
+
+                <!-- Class -->
+                <apex:inputText value="{!student.Class__c}"
+                                label="Class"/>
+
+                <!-- Mobile -->
+                <apex:inputText value="{!student.Mobile_No__c}"
+                                label="Mobile No"/>
+
+            </apex:pageBlockSection>
+
+            <!-- Buttons -->
+
+            <apex:pageBlockButtons location="bottom">
+
+                <apex:commandButton value="Save"
+                                    action="{!saveButton}"
+                                    rerender="studentForm,studentTable"/>
+
+                <apex:commandButton value="Cancel"
+                                    action="{!cancelEdit}"
+                                    rerender="studentForm"/>
+
+            </apex:pageBlockButtons>
+
+        </apex:pageBlock>
+
+        <!-- STUDENT TABLE -->
+
+        <apex:pageBlock title="Student List"
+                        id="studentTable">
+
+            <apex:pageBlockTable value="{!studentList}"
+                                 var="s">
+
+                <!-- Name -->
+                <apex:column value="{!s.Name}"
+                             headerValue="Name"/>
+
+                <!-- Roll -->
+                <apex:column value="{!s.Roll_No__c}"
+                             headerValue="Roll No"/>
+
+                <!-- Class -->
+                <apex:column value="{!s.Class__c}"
+                             headerValue="Class"/>
+
+                <!-- Mobile -->
+                <apex:column value="{!s.Mobile_No__c}"
+                             headerValue="Mobile No"/>
+
+                <!-- Edit -->
+
+                <apex:column headerValue="Edit">
+
+                    <apex:commandLink value="Edit"
+                                      action="{!editStudent}"
+                                      rerender="studentForm,studentTable">
+
+                        <apex:param name="studentId"
+                                    value="{!s.Id}"
+                                    assignTo="{!selectedId}"/>
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+                <!-- Delete -->
+
+                <apex:column headerValue="Delete">
+
+                    <apex:commandLink value="Delete"
+                                      action="{!deleteStudent}"
+                                      rerender="studentForm,studentTable">
+
+                        <apex:param name="studentId"
+                                    value="{!s.Id}"
+                                    assignTo="{!selectedId}"/>
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>

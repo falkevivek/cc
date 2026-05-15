@@ -1,0 +1,212 @@
+Apex Class — ProductController
+public class ProductController {
+
+    // Product Object
+    public Product_Inventory__c product {get; set;}
+
+    // Product List
+    public List<Product_Inventory__c> productList {get; set;}
+
+    // Edit Check
+    public Boolean isEdit {get; set;}
+
+    // Selected Record Id
+    public Id selectedId {get; set;}
+
+    // Constructor
+    public ProductController() {
+
+        product = new Product_Inventory__c();
+
+        isEdit = false;
+
+        loadProducts();
+    }
+
+    // Load All Products
+    public void loadProducts() {
+
+        productList = [
+
+            SELECT Id,
+                   Product_Name__c,
+                   Serial_Number__c,
+                   Manufacture_Date__c,
+                   Expiry_Date__c
+
+            FROM Product_Inventory__c
+
+            ORDER BY CreatedDate DESC
+        ];
+    }
+
+    // Insert or Update Product
+    public void addProduct() {
+
+        if(!isEdit) {
+
+            insert product;
+
+        } else {
+
+            update product;
+
+            isEdit = false;
+        }
+
+        // Clear Form
+        product = new Product_Inventory__c();
+
+        // Reload Table
+        loadProducts();
+    }
+
+    // Edit Product
+    public void editProduct() {
+
+        product = [
+
+            SELECT Id,
+                   Product_Name__c,
+                   Serial_Number__c,
+                   Manufacture_Date__c,
+                   Expiry_Date__c
+
+            FROM Product_Inventory__c
+
+            WHERE Id = :selectedId
+
+            LIMIT 1
+        ];
+
+        isEdit = true;
+    }
+
+    // Delete Product
+    public void deleteProduct() {
+
+        Product_Inventory__c p = [
+
+            SELECT Id
+
+            FROM Product_Inventory__c
+
+            WHERE Id = :selectedId
+
+            LIMIT 1
+        ];
+
+        delete p;
+
+        loadProducts();
+    }
+
+    // Cancel Edit
+    public void cancelEdit() {
+
+        product = new Product_Inventory__c();
+
+        isEdit = false;
+    }
+}
+Visualforce Page
+<apex:page controller="ProductController">
+
+    <apex:form >
+
+        <h1>Product Inventory Management System</h1>
+
+        <!-- Product Form -->
+
+        <apex:pageBlock title="Add / Edit Product"
+                        id="productForm">
+
+            <apex:pageBlockSection columns="1">
+
+                <apex:inputText value="{!product.Product_Name__c}"
+                                label="Product Name"/>
+
+                <apex:inputText value="{!product.Serial_Number__c}"
+                                label="Serial Number"/>
+
+                <apex:inputField value="{!product.Manufacture_Date__c}"/>
+
+                <apex:inputField value="{!product.Expiry_Date__c}"/>
+
+            </apex:pageBlockSection>
+
+            <!-- Buttons -->
+
+            <apex:pageBlockButtons >
+
+                <apex:commandButton value="Save"
+                                    action="{!addProduct}"
+                                    rerender="productForm,productTable"/>
+
+                <apex:commandButton value="Cancel"
+                                    action="{!cancelEdit}"
+                                    rerender="productForm,productTable"/>
+
+            </apex:pageBlockButtons>
+
+        </apex:pageBlock>
+
+        <!-- Product Table -->
+
+        <apex:pageBlock title="Product Records"
+                        id="productTable">
+
+            <apex:pageBlockTable value="{!productList}"
+                                 var="p">
+
+                <apex:column value="{!p.Product_Name__c}"
+                             headerValue="Product Name"/>
+
+                <apex:column value="{!p.Serial_Number__c}"
+                             headerValue="Serial Number"/>
+
+                <apex:column value="{!p.Manufacture_Date__c}"
+                             headerValue="Manufacture Date"/>
+
+                <apex:column value="{!p.Expiry_Date__c}"
+                             headerValue="Expiry Date"/>
+
+                <!-- Edit Button -->
+
+                <apex:column headerValue="Edit">
+
+                    <apex:commandLink value="Edit"
+                                      action="{!editProduct}"
+                                      rerender="productForm,productTable">
+
+                        <apex:param name="productId"
+                                     value="{!p.Id}"
+                                     assignTo="{!selectedId}" />
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+                <!-- Delete Button -->
+
+                <apex:column headerValue="Delete">
+
+                    <apex:commandLink value="Delete"
+                                      action="{!deleteProduct}"
+                                      rerender="productForm,productTable">
+
+                        <apex:param name="productId"
+                                     value="{!p.Id}"
+                                     assignTo="{!selectedId}" />
+
+                    </apex:commandLink>
+
+                </apex:column>
+
+            </apex:pageBlockTable>
+
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>

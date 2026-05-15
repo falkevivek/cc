@@ -1,7 +1,15 @@
-Apex Class — EmailController (Function with Parameters)
 public class EmailController {
 
-    // Function to Send Email
+    // Properties for Visualforce Page
+    public String toAddress {get; set;}
+
+    public String subject {get; set;}
+
+    public String body {get; set;}
+
+    public String message {get; set;}
+
+    // Function with Parameters
     public static void sendEmail(
 
         String toAddress,
@@ -66,8 +74,6 @@ public class EmailController {
         }
     }
 }
-Debug / Execute Commands
-
 Go to:
 
 Developer Console → Debug → Open Execute Anonymous Window

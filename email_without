@@ -1,0 +1,92 @@
+Apex Class — EmailController (Function with Parameters)
+public class EmailController {
+
+    // Function to Send Email
+    public static void sendEmail(
+
+        String toAddress,
+        String subject,
+        String body
+
+    ) {
+
+        // Email Validation
+        if(toAddress == null ||
+           !Pattern.matches(
+               '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$',
+               toAddress
+           )) {
+
+            System.debug(
+                'Invalid Email Address'
+            );
+
+            return;
+        }
+
+        try {
+
+            // Create Email Object
+            Messaging.SingleEmailMessage mail =
+                new Messaging.SingleEmailMessage();
+
+            // Set Recipient
+            mail.setToAddresses(
+                new List<String>{toAddress}
+            );
+
+            // Set Subject
+            mail.setSubject(
+                subject != null
+                ? subject
+                : 'No Subject'
+            );
+
+            // Set Body
+            mail.setPlainTextBody(
+                body != null
+                ? body
+                : 'No Message'
+            );
+
+            // Send Email
+            Messaging.sendEmail(
+                new Messaging.SingleEmailMessage[] {mail}
+            );
+
+            System.debug(
+                'Email Sent Successfully'
+            );
+
+        } catch(Exception e) {
+
+            System.debug(
+                'Error : ' + e.getMessage()
+            );
+        }
+    }
+}
+Debug / Execute Commands
+
+Go to:
+
+Developer Console → Debug → Open Execute Anonymous Window
+
+Paste:
+
+EmailController.sendEmail(
+
+    'test@gmail.com',
+
+    'Salesforce Practical Demo',
+
+    'Hello Sir,\n' +
+    'This email is sent using Apex Email Services.\n' +
+    'Thank You.'
+
+);
+
+Click:
+
+Execute
+Expected Output

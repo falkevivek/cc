@@ -1,0 +1,957 @@
+# Step 1 — Create VPC
+
+Open:
+
+```
+VPC Dashboard → Your VPCs → Create VPC
+```
+
+Choose:
+
+```
+VPC only
+```
+
+Fill:
+
+| Field | Value |
+| --- | --- |
+| Name | MyVPC |
+| IPv4 CIDR | 10.0.0.0/16 |
+
+Click:
+
+```
+Create VPC
+```
+
+---
+
+# Step 2 — Create Subnet
+
+Go to:
+
+```
+Subnets → Create subnet
+```
+
+Select your VPC:
+
+```
+MyVPC
+```
+
+Fill:
+
+| Field | Value |
+| --- | --- |
+| Subnet name | PublicSubnet |
+| Availability Zone | any |
+| IPv4 CIDR | 10.0.1.0/24 |
+
+Click:
+
+```
+Create subnet
+```
+
+---
+
+# Step 3 — Enable Auto Public IP
+
+Open:
+
+```
+Subnets → Select PublicSubnet
+```
+
+Click:
+
+```
+Actions → Edit subnet settings
+```
+
+Enable:
+
+```
+Auto-assign public IPv4 address
+```
+
+Save.
+
+This is VERY important for SSH/SCP.
+
+---
+
+# Step 4 — Create Internet Gateway
+
+Go to:
+
+```
+Internet Gateways → Create internet gateway
+```
+
+Name:
+
+```
+MyIGW
+```
+
+Create it.
+
+---
+
+# Step 5 — Attach Internet Gateway to VPC
+
+Select:
+
+```
+MyIGW
+```
+
+Click:
+
+```
+Actions → Attach to VPC
+```
+
+Choose:
+
+```
+MyVPC
+```
+
+Attach.
+
+---
+
+# Step 6 — Create Route Table
+
+Go to:
+
+```
+Route Tables → Create route table
+```
+
+Fill:
+
+| Field | Value |
+| --- | --- |
+| Name | PublicRouteTable |
+| VPC | MyVPC |
+
+Create.
+
+---
+
+# Step 7 — Add Internet Route
+
+Select route table.
+
+Go to:
+
+```
+Routes → Edit routes
+```
+
+Add:
+
+| Destination | Target |
+| --- | --- |
+| 0.0.0.0/0 | Internet Gateway → MyIGW |
+
+Save.
+
+This gives internet access.
+
+---
+
+# Step 8 — Associate Route Table with Subnet
+
+Go to:
+
+```
+Subnet Associations → Edit subnet associations
+```
+
+Select:
+
+```
+PublicSubnet
+```
+
+Save.
+
+---
+
+# Step 9 — Create Security Group
+
+Go to:
+
+```
+EC2 → Security Groups → Create security group
+```
+
+Fill:
+
+| Field | Value |
+| --- | --- |
+| Name | MySG |
+| VPC | MyVPC |
+
+Inbound Rule:
+
+| Type | Port | Source |
+| --- | --- | --- |
+| SSH | 22 | 0.0.0.0/0 |
+
+Create.
+
+---
+
+# Step 10 — Launch EC2 Instance
+
+Go to:
+
+[AWS EC2 Console](https://console.aws.amazon.com/ec2/?utm_source=chatgpt.com)
+
+Launch instance.
+
+Under Network Settings:
+
+| Setting | Value |
+| --- | --- |
+| VPC | MyVPC |
+| Subnet | PublicSubnet |
+| Auto Public IP | Enable |
+| Security Group | MySG |
+
+Create/download key pair.
+
+Launch instance.
+
+# Secure File Sharing Between Cloud Instances — COMPLETE PRACTICAL GUIDE
+
+This guide is optimized for:
+
+- Practical exams
+- AWS EC2 Ubuntu instances
+- WSL/Linux terminal
+- Avoiding common errors
+
+---
+
+# ASSIGNMENT GOAL
+
+You need to:
+
+✅ Create 2 EC2 instances
+
+✅ Connect using SSH
+
+✅ Create file in Sender instance
+
+✅ Transfer file using SCP
+
+✅ Verify file in Receiver instance
+
+---
+
+# ARCHITECTURE
+
+```
+Your Laptop (WSL/Linux)
+        ↓ SSH
+Sender EC2 Instance
+        ↓ SCP using Private IP
+Receiver EC2 Instance
+```
+
+---
+
+# VERY IMPORTANT UNDERSTANDING
+
+There are 3 places where commands run.
+
+| Place | Prompt Example |
+| --- | --- |
+| WSL/Linux | vivek@vivek:~$ |
+| Sender EC2 | ubuntu@ip-172-31-x-x:~$ |
+| Receiver EC2 | ubuntu@ip-172-31-y-y:~$ |
+
+Always check prompt before typing commands.
+
+---
+
+# PART 1 — CREATE KEY PAIR
+
+---
+
+# STEP 1 — OPEN AWS EC2
+
+Go to:
+
+[AWS Console](https://console.aws.amazon.com/?utm_source=chatgpt.com)
+
+Search:
+
+```
+EC2
+```
+
+Open EC2 dashboard.
+
+---
+
+# STEP 2 — CREATE KEY PAIR
+
+Left sidebar:
+
+```
+Network & Security → Key Pairs
+```
+
+Click:
+
+```
+Create Key Pair
+```
+
+---
+
+# SETTINGS
+
+| Field | Value |
+| --- | --- |
+| Name | cc-practical-key |
+| Type | RSA |
+| Format | .pem |
+
+Click:
+
+```
+Create Key Pair
+```
+
+File downloads automatically:
+
+```
+cc-practical-key.pem
+```
+
+---
+
+# IMPORTANT
+
+Keep PEM file safe.
+
+Never share it.
+
+This file is your login identity.
+
+---
+
+# PART 2 — CREATE SECURITY GROUP
+
+---
+
+# STEP 3 — CREATE SECURITY GROUP
+
+Go to:
+
+```
+Security Groups
+```
+
+Click:
+
+```
+Create Security Group
+```
+
+---
+
+# SETTINGS
+
+| Field | Value |
+| --- | --- |
+| Name | cc-practical-sg |
+| Description | Security group for CC practical |
+| VPC | Default |
+
+---
+
+# ADD INBOUND RULES
+
+Add these:
+
+| Type | Port | Source |
+| --- | --- | --- |
+| SSH | 22 | 0.0.0.0/0 |
+
+---
+
+# WHY SSH RULE IS IMPORTANT
+
+Without this:
+
+❌ SSH fails
+
+❌ SCP fails
+
+because SCP internally uses SSH.
+
+---
+
+# COMMON ERROR
+
+```
+Connection timed out
+```
+
+Reason:
+
+Port 22 blocked.
+
+Fix:
+
+Add SSH rule.
+
+---
+
+# PART 3 — CREATE SENDER INSTANCE
+
+---
+
+# STEP 4 — LAUNCH INSTANCE
+
+Click:
+
+```
+Launch Instance
+```
+
+---
+
+# SETTINGS
+
+| Field | Value |
+| --- | --- |
+| Name | sender-instance |
+| AMI | Ubuntu |
+| Type | t2.micro |
+| Key Pair | cc-practical-key |
+| Security Group | cc-practical-sg |
+
+Storage:
+
+default 8 GB is enough.
+
+Click:
+
+```
+Launch Instance
+```
+
+---
+
+# IMPORTANT
+
+Choose Ubuntu AMI.
+
+Because Ubuntu username is:
+
+```
+ubuntu
+```
+
+NOT:
+
+```
+ec2-user
+```
+
+---
+
+# COMMON ERROR
+
+```
+Permission denied (publickey)
+```
+
+Reason:
+
+Wrong username.
+
+---
+
+# CORRECT USERNAME TABLE
+
+| AMI | Username |
+| --- | --- |
+| Ubuntu | ubuntu |
+| Amazon Linux | ec2-user |
+| Fedora | fedora |
+
+---
+
+# PART 4 — CREATE RECEIVER INSTANCE
+
+Repeat same steps.
+
+---
+
+# SETTINGS
+
+| Field | Value |
+| --- | --- |
+| Name | receiver-instance |
+| AMI | Ubuntu |
+| Type | t2.micro |
+| Key Pair | cc-practical-key |
+| Security Group | cc-practical-sg |
+
+Launch instance.
+
+---
+
+# PART 5 — IMPORTANT IP UNDERSTANDING
+
+Each instance has:
+
+| Type | Example |
+| --- | --- |
+| Public IP | 16.xx.xx.xx |
+| Private IP | 172.31.xx.xx |
+
+---
+
+# PUBLIC IP
+
+Used from internet.
+
+Examples:
+
+- SSH from laptop
+- browser access
+
+---
+
+# PRIVATE IP
+
+Used between EC2 instances internally.
+
+Used for SCP between instances.
+
+---
+
+# MEMORY RULE
+
+| Communication | Use Which IP |
+| --- | --- |
+| Laptop → EC2 | Public IP |
+| EC2 → EC2 | Private IP |
+
+---
+
+# PART 6 — LOCAL WSL SETUP
+
+---
+
+# STEP 5 — OPEN WSL/LINUX TERMINAL
+
+Prompt:
+
+```
+vivek@vivek:~$
+```
+
+---
+
+# STEP 6 — GO TO PEM LOCATION
+
+Example:
+
+```bash
+cd ~/CC
+ls
+```
+
+You should see:
+
+```
+cc-practical-key.pem
+```
+
+---
+
+# STEP 7 — GIVE PERMISSION TO PEM
+
+Run:
+
+```bash
+chmod 400 cc-practical-key.pem
+```
+
+---
+
+# WHY chmod 400?
+
+SSH requires private key to be secure.
+
+---
+
+# COMMON ERROR
+
+```
+UNPROTECTED PRIVATE KEY FILE
+```
+
+Fix:
+
+```bash
+chmod 400 cc-practical-key.pem
+```
+
+---
+
+# PART 7 — SSH INTO SENDER
+
+---
+
+# STEP 8 — CONNECT TO SENDER
+
+Run in WSL:
+
+```bash
+ssh -i cc-practical-key.pem ubuntu@SENDER_PUBLIC_IP
+```
+
+Example:
+
+```bash
+ssh -i cc-practical-key.pem ubuntu@16.171.145.72
+```
+
+---
+
+# FIRST TIME MESSAGE
+
+You may see:
+
+```
+Are you sure you want to continue connecting?
+```
+
+Type:
+
+```
+yes
+```
+
+---
+
+# SUCCESS
+
+Prompt becomes:
+
+```
+ubuntu@ip-172-31-41-20:~$
+```
+
+Now you are inside Sender EC2.
+
+---
+
+# PART 8 — CREATE FILE
+
+---
+
+# STEP 9 — CREATE FILE
+
+Run inside Sender EC2:
+
+```bash
+echo "Cloud Computing Practical" > file.txt
+```
+
+---
+
+# STEP 10 — VERIFY FILE
+
+```bash
+ls
+```
+
+You should see:
+
+```
+file.txt
+```
+
+---
+
+# STEP 11 — CHECK CONTENT
+
+```bash
+cat file.txt
+```
+
+Output:
+
+```
+Cloud Computing Practical
+```
+
+---
+
+# PART 9 — COPY PEM INTO SENDER
+
+---
+
+# WHY THIS IS NEEDED
+
+Sender EC2 needs PEM file to SSH into Receiver EC2.
+
+---
+
+# STEP 12 — EXIT SENDER
+
+Run:
+
+```bash
+exit
+```
+
+Back to WSL.
+
+---
+
+# STEP 13 — COPY PEM TO SENDER
+
+Run in WSL:
+
+```bash
+scp -i cc-practical-key.pem cc-practical-key.pem ubuntu@SENDER_PUBLIC_IP:/home/ubuntu/
+```
+
+Example:
+
+```bash
+scp -i cc-practical-key.pem cc-practical-key.pem ubuntu@16.171.145.72:/home/ubuntu/
+```
+
+---
+
+# STEP 14 — SSH INTO SENDER AGAIN
+
+```bash
+ssh -i cc-practical-key.pem ubuntu@SENDER_PUBLIC_IP
+```
+
+---
+
+# STEP 15 — FIX PEM PERMISSION INSIDE SENDER
+
+Run:
+
+```bash
+chmod 400 cc-practical-key.pem
+```
+
+---
+
+# PART 10 — TRANSFER FILE USING SCP
+
+---
+
+# STEP 16 — RUN SCP
+
+IMPORTANT:
+
+Use RECEIVER PRIVATE IP.
+
+Run inside Sender:
+
+```bash
+scp -i cc-practical-key.pem file.txt ubuntu@RECEIVER_PRIVATE_IP:/home/ubuntu/
+```
+
+Example:
+
+```bash
+scp -i cc-practical-key.pem file.txt ubuntu@172.31.46.227:/home/ubuntu/
+```
+
+---
+
+# EXPECTED OUTPUT
+
+```
+file.txt    100%
+```
+
+---
+
+# COMMON ERRORS
+
+---
+
+# ERROR 1
+
+```
+Connection timed out
+```
+
+Reason:
+
+Security group missing SSH rule.
+
+Fix:
+
+Allow port 22.
+
+---
+
+# ERROR 2
+
+```
+Permission denied (publickey)
+```
+
+Reason:
+
+Wrong username.
+
+Fix:
+
+Use:
+
+```
+ubuntu
+```
+
+---
+
+# ERROR 3
+
+```
+No such file or directory
+```
+
+Reason:
+
+Wrong path or missing colon `:` in SCP.
+
+Correct syntax:
+
+```bash
+scp file user@IP:/path
+```
+
+---
+
+# PART 11 — VERIFY IN RECEIVER
+
+---
+
+# STEP 17 — EXIT SENDER
+
+```bash
+exit
+```
+
+---
+
+# STEP 18 — SSH INTO RECEIVER
+
+Run in WSL:
+
+```bash
+ssh -i cc-practical-key.pem ubuntu@RECEIVER_PUBLIC_IP
+```
+
+---
+
+# STEP 19 — VERIFY FILE
+
+Inside Receiver:
+
+```bash
+ls
+```
+
+You should see:
+
+```
+file.txt
+```
+
+---
+
+# STEP 20 — CHECK CONTENT
+
+```bash
+cat file.txt
+```
+
+Output:
+
+```
+Cloud Computing Practical
+```
+
+---
+
+# PRACTICAL COMPLETED SUCCESSFULLY 🎉
+
+---
+
+# FINAL VIVA QUESTIONS
+
+---
+
+# What is EC2?
+
+Virtual machine in AWS cloud.
+
+---
+
+# What is SSH?
+
+Secure remote login protocol.
+
+Uses port 22.
+
+---
+
+# What is SCP?
+
+Secure file transfer over SSH.
+
+---
+
+# Why chmod 400?
+
+To secure private key permissions.
+
+---
+
+# Why use Private IP between instances?
+
+Because both instances are inside same VPC network.
+
+---
+
+# What is Security Group?
+
+Firewall controlling traffic.
+
+---
+
+# Difference Between Public and Private IP?
+
+| Public IP | Private IP |
+| --- | --- |
+| Internet accessible | Internal communication |
+| Used from laptop | Used between EC2s |

@@ -1,0 +1,430 @@
+public class EmployeeControllerConsole {
+
+
+
+  // CREATE
+
+  public void addEmployee(
+
+
+
+    String name,
+
+    Decimal empId,
+
+    String email,
+
+    Date birthDate,
+
+    String department
+
+  ) {
+
+
+
+    Employee__c emp =
+
+      new Employee__c();
+
+
+
+    emp.Name = name;
+
+
+
+    emp.Emp_ID__c = empId;
+
+
+
+    emp.Email__c = email;
+
+
+
+    emp.Birth_Date__c = birthDate;
+
+
+
+    emp.Department__c = department;
+
+
+
+    insert emp;
+
+
+
+    System.debug(
+
+      'Employee Inserted Successfully'
+
+    );
+
+  }
+
+
+
+  // READ
+
+  public void getEmployees() {
+
+
+
+    List<Employee__c> empList = [
+
+
+
+      SELECT Id,
+
+          Name,
+
+          Emp_ID__c,
+
+          Email__c,
+
+          Birth_Date__c,
+
+          Department__c
+
+
+
+      FROM Employee__c
+
+    ];
+
+
+
+    for(Employee__c emp : empList) {
+
+
+
+      System.debug(
+
+
+
+        'Name: ' + emp.Name +
+
+
+
+        ' | Emp ID: ' + emp.Emp_ID__c +
+
+
+
+        ' | Email: ' + emp.Email__c +
+
+
+
+        ' | Birth Date: ' + emp.Birth_Date__c +
+
+
+
+        ' | Department: ' + emp.Department__c
+
+      );
+
+    }
+
+  }
+
+
+
+  // UPDATE
+
+  public void updateEmployee(
+
+
+
+    Id empRecordId,
+
+    String newName,
+
+    String newDepartment
+
+  ) {
+
+
+
+    Employee__c emp = [
+
+
+
+      SELECT Id,
+
+          Name,
+
+          Department__c
+
+
+
+      FROM Employee__c
+
+
+
+      WHERE Id = :empRecordId
+
+
+
+      LIMIT 1
+
+    ];
+
+
+
+    emp.Name = newName;
+
+
+
+    emp.Department__c = newDepartment;
+
+
+
+    update emp;
+
+
+
+    System.debug(
+
+      'Employee Updated Successfully'
+
+    );
+
+  }
+
+
+
+  // DELETE
+
+  public void deleteEmployee(
+
+    Id empRecordId
+
+  ) {
+
+
+
+    Employee__c emp = [
+
+
+
+      SELECT Id
+
+
+
+      FROM Employee__c
+
+
+
+      WHERE Id = :empRecordId
+
+
+
+      LIMIT 1
+
+    ];
+
+
+
+    delete emp;
+
+
+
+    System.debug(
+
+      'Employee Deleted Successfully'
+
+    );
+
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Execute Anonymous Commands
+Open:
+
+Debug → Open Execute Anonymous Window
+
+
+
+
+
+
+
+1. Create Object
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+Click Execute.
+
+
+
+2. INSERT Employee
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+ec.addEmployee(
+
+    'Rahul Sharma',
+
+    101,
+
+    'rahul@gmail.com',
+
+    Date.newInstance(2002,5,10),
+
+    'IT'
+
+);
+
+
+
+Click Execute.
+
+
+
+3. VIEW Employees
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+ec.getEmployees();
+
+
+
+Click Execute.
+
+
+
+4. COPY RECORD ID
+Go to:
+
+App Launcher
+
+→ Employee Tab
+
+→ Open Record
+
+
+
+Copy Record Id from URL.
+
+Example:
+
+a01dM000003XYZ123
+
+
+
+
+
+
+
+5. UPDATE Employee
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+ec.updateEmployee(
+
+
+
+    'a01dM000003XYZ123',
+
+
+
+    'Rahul Verma',
+
+
+
+    'HR'
+
+);
+
+
+
+Click Execute.
+
+
+
+6. VIEW Updated Data
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+ec.getEmployees();
+
+
+
+
+
+7. DELETE Employee
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+ec.deleteEmployee(
+
+
+
+    'a01dM000003XYZ123'
+
+);
+
+
+
+Click Execute.
+
+
+
+8. VERIFY DELETE
+
+
+EmployeeControllerConsole ec =
+
+    new EmployeeControllerConsole();
+
+
+
+ec.getEmployees();
+
+
+
+Record will not appear.

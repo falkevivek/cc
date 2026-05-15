@@ -1,0 +1,241 @@
+Apex Class
+public class BankAccountSystem {
+
+    // CREATE CUSTOMER
+    public void addCustomer(
+
+        String customerName,
+        Decimal customerId,
+        String email,
+        Date birthDate,
+        String department
+    ) {
+
+        Bank_Account__c customer =
+            new Bank_Account__c();
+
+        customer.Name = customerName;
+
+        customer.Customer_ID__c =
+            customerId;
+
+        customer.Email__c = email;
+
+        customer.Birth_Date__c =
+            birthDate;
+
+        customer.Department__c =
+            department;
+
+        insert customer;
+
+        System.debug(
+            'Customer Added Successfully'
+        );
+    }
+
+    // READ CUSTOMERS
+    public void viewCustomers() {
+
+        List<Bank_Account__c> customerList = [
+
+            SELECT Id,
+                   Name,
+                   Customer_ID__c,
+                   Email__c,
+                   Birth_Date__c,
+                   Department__c
+
+            FROM Bank_Account__c
+        ];
+
+        for(Bank_Account__c c :
+            customerList) {
+
+            System.debug(
+
+                'Name: ' + c.Name +
+
+                ' | Customer ID: ' +
+                c.Customer_ID__c +
+
+                ' | Email: ' +
+                c.Email__c +
+
+                ' | Birth Date: ' +
+                c.Birth_Date__c +
+
+                ' | Department: ' +
+                c.Department__c
+            );
+        }
+    }
+
+    // UPDATE CUSTOMER
+    public void updateCustomer(
+
+        Id customerRecordId,
+        String newName,
+        String newDepartment
+    ) {
+
+        Bank_Account__c customer = [
+
+            SELECT Id,
+                   Name,
+                   Department__c
+
+            FROM Bank_Account__c
+
+            WHERE Id = :customerRecordId
+
+            LIMIT 1
+        ];
+
+        customer.Name = newName;
+
+        customer.Department__c =
+            newDepartment;
+
+        update customer;
+
+        System.debug(
+            'Customer Updated Successfully'
+        );
+    }
+
+    // DELETE CUSTOMER
+    public void deleteCustomer(
+        Id customerRecordId
+    ) {
+
+        Bank_Account__c customer = [
+
+            SELECT Id
+
+            FROM Bank_Account__c
+
+            WHERE Id = :customerRecordId
+
+            LIMIT 1
+        ];
+
+        delete customer;
+
+        System.debug(
+            'Customer Deleted Successfully'
+        );
+    }
+}
+Execute Anonymous Commands
+
+Open:
+
+Developer Console
+→ Debug
+→ Open Execute Anonymous Window
+1. Create Object
+BankAccountSystem bs =
+    new BankAccountSystem();
+2. INSERT Customer
+BankAccountSystem bs =
+    new BankAccountSystem();
+
+bs.addCustomer(
+
+    'Rahul Sharma',
+
+    101,
+
+    'rahul@gmail.com',
+
+    Date.newInstance(2002,5,10),
+
+    'Finance'
+);
+3. VIEW Customers
+BankAccountSystem bs =
+    new BankAccountSystem();
+
+bs.viewCustomers();
+4. UPDATE Customer
+
+Copy Record Id from Salesforce record.
+
+BankAccountSystem bs =
+    new BankAccountSystem();
+
+bs.updateCustomer(
+
+    'a01XXXXXXXXXXXX',
+
+    'Rahul Verma',
+
+    'HR'
+);
+5. DELETE Customer
+BankAccountSystem bs =
+    new BankAccountSystem();
+
+bs.deleteCustomer(
+
+    'a01XXXXXXXXXXXX'
+);
+6. VERIFY DELETE
+BankAccountSystem bs =
+    new BankAccountSystem();
+
+bs.viewCustomers();
+How To Show Teacher
+Insert
+
+Show:
+
+Customer Added Successfully
+Read
+
+Show customer records in logs.
+
+Update
+
+Show updated department/name.
+
+Delete
+
+Show deleted record removed from output.
+
+How To See Logs
+
+Go to:
+
+Logs
+→ Open Latest Log
+→ Search USER_DEBUG
+Viva Questions
+What is SOQL?
+
+Salesforce Object Query Language.
+
+What is DML?
+
+Database operations:
+
+insert
+update
+delete
+Why use LIMIT 1?
+
+To fetch only one record.
+
+Why __c?
+
+Custom Objects and fields in Salesforce use __c.
+
+Features Included
+
+✅ Console Based
+✅ CRUD Operations
+✅ SOQL Queries
+✅ Custom Object Usage
+✅ Debug Logs
+✅ Apex Programming

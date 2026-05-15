@@ -1,0 +1,118 @@
+public class EmailWithAttachmentController {
+
+    public String toAddress {get; set;}
+
+    public String subject {get; set;}
+
+    public String body {get; set;}
+
+    public Blob fileBody {get; set;}
+
+    public String fileName {get; set;}
+
+    public String message {get; set;}
+
+    public void sendEmail() {
+
+        if(toAddress == null ||
+           !Pattern.matches(
+               '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$',
+               toAddress
+           )) {
+
+            message = 'Invalid Email Address';
+
+            return;
+        }
+
+        try {
+
+            Messaging.SingleEmailMessage mail =
+                new Messaging.SingleEmailMessage();
+
+            mail.setToAddresses(
+                new List<String>{toAddress}
+            );
+
+            mail.setSubject(subject);
+
+            mail.setPlainTextBody(body);
+
+            if(fileBody != null) {
+
+                Messaging.EmailFileAttachment attachment =
+                    new Messaging.EmailFileAttachment();
+
+                attachment.setFileName(fileName);
+
+                attachment.setBody(fileBody);
+
+                mail.setFileAttachments(
+                    new Messaging.EmailFileAttachment[] {attachment}
+                );
+            }
+
+            Messaging.sendEmail(
+                new Messaging.SingleEmailMessage[] {mail}
+            );
+
+            message = 'Email Sent Successfully';
+
+            toAddress = '';
+
+            subject = '';
+
+            body = '';
+        }
+
+        catch(Exception e) {
+
+            message = 'Error : ' + e.getMessage();
+        }
+    }
+}
+
+
+<apex:page controller="EmailWithAttachmentController">
+
+    <apex:form enctype="multipart/form-data">
+
+        <apex:pageBlock title="Email Notification System">
+
+            <apex:pageBlockSection columns="1">
+
+                <apex:inputText value="{!toAddress}"
+                    label="Recipient Email"/>
+
+                <apex:inputText value="{!subject}"
+                    label="Subject"/>
+
+                <apex:inputTextarea value="{!body}"
+                    label="Message Body"/>
+
+                <apex:inputFile value="{!fileBody}"
+                    filename="{!fileName}"/>
+
+            </apex:pageBlockSection>
+
+            <apex:pageBlockButtons >
+
+                <apex:commandButton value="Send Email"
+                    action="{!sendEmail}"
+                   />
+
+            </apex:pageBlockButtons>
+
+        </apex:pageBlock>
+
+        <apex:outputPanel id="msg">
+
+            <h3>{!message}</h3>
+
+        </apex:outputPanel>
+
+    </apex:form>
+
+</apex:page>
+
+this code si workogn right 

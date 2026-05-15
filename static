@@ -1,0 +1,333 @@
+# Static Website Hosting using Ubuntu + Nginx
+
+This is a cleaner and more professional method for your CC practical.
+
+You will:
+
+✅ Launch Ubuntu Server
+✅ Install Nginx
+✅ Host Static Website
+✅ Access Website using Public IP
+
+---
+
+# Step 1 — Launch EC2 Ubuntu Instance
+
+Go to:
+
+```text id="wz7evn"
+AWS Console
+→ EC2
+→ Launch Instance
+```
+
+---
+
+# Configure Instance
+
+## Name
+
+```text id="e7b2tw"
+nginx-static-server
+```
+
+---
+
+## AMI
+
+Select:
+
+```text id="el6v9q"
+Ubuntu Server 22.04 LTS
+```
+
+---
+
+## Instance Type
+
+```text id="5q0jz4"
+t2.micro
+```
+
+---
+
+## Key Pair
+
+Create/download `.pem` file.
+
+---
+
+# Step 2 — Configure Security Group
+
+Allow these ports:
+
+| Type  | Port |
+| ----- | ---- |
+| SSH   | 22   |
+| HTTP  | 80   |
+| HTTPS | 443  |
+
+---
+
+# Step 3 — Launch Instance
+
+Click:
+
+```text id="i2npaf"
+Launch Instance
+```
+
+---
+
+# Step 4 — Connect to Ubuntu Server
+
+Copy Public IP.
+
+Example:
+
+```text id="77j7nx"
+13.233.XX.XX
+```
+
+---
+
+# SSH Connection
+
+## Windows PowerShell
+
+```bash id="2ey3j8"
+ssh -i mykey.pem ubuntu@YOUR_PUBLIC_IP
+```
+
+Example:
+
+```bash id="1bupx7"
+ssh -i awskey.pem ubuntu@13.233.XX.XX
+```
+
+---
+
+# Step 5 — Update Ubuntu
+
+```bash id="55a0d4"
+sudo apt update
+```
+
+---
+
+# Step 6 — Install Nginx
+
+```bash id="3vw5g7"
+sudo apt install nginx -y
+```
+
+---
+
+# Step 7 — Start Nginx
+
+```bash id="0v7z9t"
+sudo systemctl start nginx
+```
+
+Enable on boot:
+
+```bash id="1l3e5j"
+sudo systemctl enable nginx
+```
+
+---
+
+# Step 8 — Check Nginx Status
+
+```bash id="71obco"
+sudo systemctl status nginx
+```
+
+You should see:
+
+```text id="ukuvph"
+active (running)
+```
+
+Press:
+
+```text id="d65uw8"
+Q
+```
+
+to exit.
+
+---
+
+# Step 9 — Open Website Directory
+
+```bash id="mrj5u1"
+cd /var/www/html
+```
+
+---
+
+# Step 10 — Remove Default Page
+
+```bash id="4a1crz"
+sudo rm index.nginx-debian.html
+```
+
+---
+
+# Step 11 — Create Static Website
+
+```bash id="n6qws8"
+sudo nano index.html
+```
+
+Paste:
+
+```html id="vuv2vp"
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cloud Computing Assignment</title>
+</head>
+
+<body>
+
+    <h1>Static Website Hosted using Nginx</h1>
+
+    <h2>Ubuntu Cloud Server</h2>
+
+    <p>Name: Vivek Falke</p>
+
+    <p>Cloud Computing Practical</p>
+
+</body>
+
+</html>
+```
+
+---
+
+# Save File
+
+```text id="w6ff0w"
+CTRL + X
+Y
+ENTER
+```
+
+---
+
+# Step 12 — Restart Nginx
+
+```bash id="b38g18"
+sudo systemctl restart nginx
+```
+
+---
+
+# Step 13 — Open Website
+
+Browser:
+
+```text id="s7sz3s"
+http://YOUR_PUBLIC_IP
+```
+
+Example:
+
+```text id="7x37od"
+http://13.233.XX.XX
+```
+
+Your static website will open publicly.
+
+---
+
+# Commands Summary
+
+## Install Nginx
+
+```bash id="4kk9m0"
+sudo apt update
+sudo apt install nginx -y
+```
+
+---
+
+## Start Nginx
+
+```bash id="2j0twv"
+sudo systemctl start nginx
+```
+
+---
+
+## Enable Nginx
+
+```bash id="cjw6w6"
+sudo systemctl enable nginx
+```
+
+---
+
+## Website Directory
+
+```bash id="udj1t8"
+cd /var/www/html
+```
+
+---
+
+## Create HTML File
+
+```bash id="y4v6fq"
+sudo nano index.html
+```
+
+---
+
+## Restart Nginx
+
+```bash id="ic2w2r"
+sudo systemctl restart nginx
+```
+
+---
+
+# Viva Questions
+
+## What is Nginx?
+
+Nginx is a high-performance web server used for hosting websites.
+
+---
+
+## Why Port 80?
+
+Port 80 is used for HTTP traffic.
+
+---
+
+## What is Static Website?
+
+Website with fixed HTML/CSS/JS content.
+
+---
+
+## Why Public IP?
+
+To make server accessible over internet.
+
+---
+
+# What To Show Teacher
+
+✅ EC2 Running
+✅ Ubuntu Server
+✅ Nginx Installed
+✅ Port 80 Open
+✅ HTML Website
+✅ Website Opening using Public IP
+
+This is enough for full practical demonstration.

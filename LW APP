@@ -1,0 +1,655 @@
+# COMPLETE PRACTICAL STEPS — College Management Lightning Application
+
+Assignment:
+Develop a College Management Lightning Application with validations for Student and Faculty records. 
+
+This practical uses:
+
+* Custom Objects
+* Validation Rules
+* Tabs
+* Lightning App
+
+No coding required.
+
+---
+
+# PART 1 — CREATE STUDENT OBJECT
+
+---
+
+# STEP 1 — Login to Salesforce
+
+Open:
+
+[Salesforce Login](https://login.salesforce.com?utm_source=chatgpt.com)
+
+Login.
+
+---
+
+# STEP 2 — Open Setup
+
+Top-right:
+
+* ⚙️ Gear Icon
+* Setup
+
+---
+
+# STEP 3 — Create Student Object
+
+Go:
+
+* Object Manager
+* Create
+* Custom Object
+
+Fill:
+
+| Property     | Value        |
+| ------------ | ------------ |
+| Label        | Student      |
+| Plural Label | Students     |
+| Object Name  | Student      |
+| Record Name  | Student Name |
+
+Click:
+
+* Save
+
+---
+
+# STEP 4 — Create Student Fields
+
+Inside Student Object:
+
+* Fields & Relationships
+* New
+
+Create these fields one by one.
+
+---
+
+## 4.1 Roll Number
+
+| Property    | Value       |
+| ----------- | ----------- |
+| Data Type   | Number      |
+| Field Label | Roll Number |
+
+Save.
+
+---
+
+## 4.2 Marks
+
+| Property    | Value  |
+| ----------- | ------ |
+| Data Type   | Number |
+| Field Label | Marks  |
+
+Save.
+
+---
+
+## 4.3 Email
+
+| Property    | Value |
+| ----------- | ----- |
+| Data Type   | Email |
+| Field Label | Email |
+
+Save.
+
+---
+
+# PART 2 — CREATE STUDENT VALIDATION RULES
+
+---
+
+# STEP 5 — Marks Validation Rule
+
+Go:
+
+* Validation Rules
+* New
+
+Rule Name:
+
+```text id="8nj3lp"
+Marks_Validation
+```
+
+Formula:
+
+```text id="jlwm4p"
+OR(
+    Marks__c < 0,
+    Marks__c > 100
+)
+```
+
+Error Message:
+
+```text id="c9v7wq"
+Marks must be between 0 and 100
+```
+
+Save.
+
+---
+
+# STEP 6 — Roll Number Validation Rule
+
+Rule Name:
+
+```text id="jlwm6p"
+Roll_Number_Validation
+```
+
+Formula:
+
+```text id="jlwm8r"
+Roll_Number__c <= 0
+```
+
+Error Message:
+
+```text id="4x8pkm"
+Roll Number must be greater than 0
+```
+
+Save.
+
+---
+
+# STEP 7 — Student Name Validation Rule
+
+Rule Name:
+
+```text id="m3q9vw"
+Student_Name_Validation
+```
+
+Formula:
+
+```text id="jlwm2p"
+ISBLANK(Name)
+```
+
+Error Message:
+
+```text id="x6r1kb"
+Student Name cannot be blank
+```
+
+Save.
+
+---
+
+# STEP 8 — Student Email Validation Rule
+
+Rule Name:
+
+```text id="w0k2qn"
+Student_Email_Validation
+```
+
+Formula:
+
+```text id="jlwm5p"
+NOT(
+    CONTAINS(
+        Email__c,
+        "@"
+    )
+)
+```
+
+Error Message:
+
+```text id="h9y7ld"
+Email must contain @ symbol
+```
+
+Save.
+
+---
+
+# PART 3 — CREATE FACULTY OBJECT
+
+---
+
+# STEP 9 — Create Faculty Object
+
+Go:
+
+* Object Manager
+* Create
+* Custom Object
+
+Fill:
+
+| Property     | Value        |
+| ------------ | ------------ |
+| Label        | Faculty      |
+| Plural Label | Faculties    |
+| Object Name  | Faculty      |
+| Record Name  | Faculty Name |
+
+Save.
+
+---
+
+# STEP 10 — Create Faculty Fields
+
+Inside Faculty Object:
+
+* Fields & Relationships
+* New
+
+Create fields one by one.
+
+---
+
+## 10.1 Faculty ID
+
+| Property    | Value      |
+| ----------- | ---------- |
+| Data Type   | Number     |
+| Field Label | Faculty ID |
+
+Save.
+
+---
+
+## 10.2 Salary
+
+| Property    | Value    |
+| ----------- | -------- |
+| Data Type   | Currency |
+| Field Label | Salary   |
+
+Save.
+
+---
+
+## 10.3 Department
+
+| Property    | Value      |
+| ----------- | ---------- |
+| Data Type   | Picklist   |
+| Field Label | Department |
+
+Values:
+
+```text id="jlwm7r"
+IT
+Computer
+Mechanical
+Civil
+ENTC
+```
+
+Save.
+
+---
+
+## 10.4 Joining Date
+
+| Property    | Value        |
+| ----------- | ------------ |
+| Data Type   | Date         |
+| Field Label | Joining Date |
+
+Save.
+
+---
+
+## 10.5 Email
+
+| Property    | Value |
+| ----------- | ----- |
+| Data Type   | Email |
+| Field Label | Email |
+
+Save.
+
+---
+
+# PART 4 — CREATE FACULTY VALIDATION RULES
+
+---
+
+# STEP 11 — Faculty Name Validation Rule
+
+Go:
+
+* Validation Rules
+* New
+
+Rule Name:
+
+```text id="7p1xmc"
+Faculty_Name_Validation
+```
+
+Formula:
+
+```text id="jlwm9r"
+LEN(Name) < 3
+```
+
+Error Message:
+
+```text id="2d6kzt"
+Faculty Name must contain at least 3 characters
+```
+
+Save.
+
+---
+
+# STEP 12 — Faculty ID Validation Rule
+
+Rule Name:
+
+```text id="z5k8yw"
+Faculty_ID_Validation
+```
+
+Formula:
+
+```text id="jlwm3p"
+Faculty_ID__c <= 0
+```
+
+Error Message:
+
+```text id="m4w1rs"
+Faculty ID must be greater than 0
+```
+
+Save.
+
+---
+
+# STEP 13 — Salary Validation Rule
+
+Rule Name:
+
+```text id="1t8pvn"
+Salary_Validation
+```
+
+Formula:
+
+```text id="jlwm6r"
+OR(
+    Salary__c <= 10000,
+    Salary__c >= 500000
+)
+```
+
+Error Message:
+
+```text id="r6y9jp"
+Salary must be between 10,000 and 500,000
+```
+
+Save.
+
+---
+
+# STEP 14 — Department Validation Rule
+
+Rule Name:
+
+```text id="0q5zlh"
+Department_Validation
+```
+
+Formula:
+
+```text id="jlwm8p"
+ISBLANK(TEXT(Department__c))
+```
+
+Error Message:
+
+```text id="w5d2xt"
+Department must be selected
+```
+
+Save.
+
+---
+
+# STEP 15 — Joining Date Validation Rule
+
+Rule Name:
+
+```text id="3m8kvr"
+Joining_Date_Validation
+```
+
+Formula:
+
+```text id="jlwm1p"
+Joining_Date__c > TODAY()
+```
+
+Error Message:
+
+```text id="g3n6pw"
+Joining Date cannot be future date
+```
+
+Save.
+
+---
+
+# STEP 16 — Faculty Email Validation Rule
+
+Rule Name:
+
+```text id="n0w7tk"
+Faculty_Email_Validation
+```
+
+Formula:
+
+```text id="jlwm4r"
+NOT(
+    CONTAINS(
+        Email__c,
+        "@"
+    )
+)
+```
+
+Error Message:
+
+```text id="t9q2ld"
+Email must contain @ symbol
+```
+
+Save.
+
+---
+
+# PART 5 — CREATE TABS
+
+---
+
+# STEP 17 — Create Student Tab
+
+Go:
+
+* Setup
+* Search:
+
+```text id="jlwm7p"
+Tabs
+```
+
+Under:
+
+```text id="jlwm0p"
+Custom Object Tabs
+```
+
+Click:
+
+```text id="q7k5md"
+New
+```
+
+Choose:
+
+```text id="9v2rjt"
+Student
+```
+
+Choose any icon.
+
+Save.
+
+---
+
+# STEP 18 — Create Faculty Tab
+
+Again:
+
+* New
+
+Choose:
+
+```text id="jlwm2r"
+Faculty
+```
+
+Choose icon.
+
+Save.
+
+---
+
+# PART 6 — CREATE LIGHTNING APP
+
+---
+
+# STEP 19 — Open App Manager
+
+Go:
+
+* Setup
+* App Manager
+
+Click:
+
+```text id="jlwm5r"
+New Lightning App
+```
+
+---
+
+# STEP 20 — App Details
+
+App Name:
+
+```text id="jlwm9p"
+College Management System
+```
+
+Click:
+
+* Next
+* Next
+
+---
+
+# STEP 21 — Add Tabs
+
+Add:
+
+* Students
+* Faculties
+
+Move them to selected tabs.
+
+Click:
+
+* Next
+* Save
+* Done
+
+---
+
+# PART 7 — TEST VALIDATIONS
+
+---
+
+# STUDENT VALIDATION TESTS
+
+| Test               | Expected |
+| ------------------ | -------- |
+| Marks > 100        | Error    |
+| Marks < 0          | Error    |
+| Roll Number <= 0   | Error    |
+| Blank Student Name | Error    |
+| Invalid Email      | Error    |
+| Valid Data         | Saved    |
+
+---
+
+# FACULTY VALIDATION TESTS
+
+| Test                | Expected |
+| ------------------- | -------- |
+| Name < 3 chars      | Error    |
+| Faculty ID <= 0     | Error    |
+| Salary < 10000      | Error    |
+| Empty Department    | Error    |
+| Future Joining Date | Error    |
+| Invalid Email       | Error    |
+| Valid Data          | Saved    |
+
+---
+
+# WHAT EXAMINER EXPECTS
+
+✅ Student Object
+✅ Faculty Object
+✅ Validation Rules
+✅ Email Validation
+✅ Tabs
+✅ Lightning App
+✅ Validation Testing
+
+---
+
+# IMPORTANT VIVA QUESTIONS
+
+## What is Validation Rule?
+
+A validation rule prevents invalid data from being saved into Salesforce objects.
+
+---
+
+## What is Lightning App?
+
+A Lightning App is a collection of tabs, objects, and pages grouped together.
+
+---
+
+## What is Custom Object?
+
+A custom object is a user-created database table in Salesforce.
+
+---
+
+## Why use Validation Rules?
+
+To ensure data accuracy and prevent invalid records.

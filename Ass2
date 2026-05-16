@@ -1,0 +1,262 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+
+vector<vector<int>> grid;
+
+int dx[] = {-1, 1, 0, 0};
+int dy[] = {0, 0, -1, 1};
+
+// Heuristic Function
+int heuristic(int x,
+              int y,
+              int destX,
+              int destY)
+{
+    return abs(x - destX)
+         + abs(y - destY);
+}
+
+// Display Grid
+void displayGrid()
+{
+    cout << "\n========== GAME MAP ==========\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            if(grid[i][j] == 1)
+                cout << "# ";
+            else
+                cout << ". ";
+        }
+
+        cout << endl;
+    }
+
+    cout << "\n# = Obstacle\n";
+    cout << ". = Free Path\n";
+}
+
+// A* Algorithm
+void aStar(int startX,
+           int startY,
+           int destX,
+           int destY)
+{
+    priority_queue<
+        pair<int, pair<int,int>>,
+        vector<pair<int, pair<int,int>>>,
+        greater<pair<int, pair<int,int>>>
+    > pq;
+
+    vector<vector<int>> g(
+        n,
+        vector<int>(m, 1e9)
+    );
+
+    vector<vector<bool>> visited(
+        n,
+        vector<bool>(m, false)
+    );
+
+    vector<vector<pair<int,int>>> parent(
+        n,
+        vector<pair<int,int>>(m, {-1,-1})
+    );
+
+    g[startX][startY] = 0;
+
+    int h = heuristic(startX,
+                      startY,
+                      destX,
+                      destY);
+
+    pq.push({h, {startX, startY}});
+
+    while(!pq.empty())
+    {
+        int x = pq.top().second.first;
+        int y = pq.top().second.second;
+
+        pq.pop();
+
+        if(visited[x][y])
+            continue;
+
+        visited[x][y] = true;
+
+        // Destination Found
+        if(x == destX &&
+           y == destY)
+        {
+            vector<pair<int,int>> path;
+
+            while(x != -1 &&
+                  y != -1)
+            {
+                path.push_back({x, y});
+
+                int px = parent[x][y].first;
+                int py = parent[x][y].second;
+
+                x = px;
+                y = py;
+            }
+
+            reverse(path.begin(),
+                    path.end());
+
+            // Create Result Grid
+            vector<vector<char>> result(
+                n,
+                vector<char>(m, '.')
+            );
+
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = 0; j < m; j++)
+                {
+                    if(grid[i][j] == 1)
+                        result[i][j] = '#';
+                }
+            }
+
+            // Mark Path
+            for(auto p : path)
+            {
+                result[p.first][p.second] = '*';
+            }
+
+            result[startX][startY] = 'S';
+            result[destX][destY] = 'T';
+
+            cout << "\n===== SHORTEST PATH FOUND =====\n";
+
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = 0; j < m; j++)
+                {
+                    cout << result[i][j] << " ";
+                }
+
+                cout << endl;
+            }
+
+            cout << "\nS = Start Position\n";
+            cout << "T = Treasure Position\n";
+            cout << "* = Shortest Path\n";
+
+            cout << "\nMinimum Cost : "
+                 << g[destX][destY]
+                 << endl;
+
+            cout << "\nPath Coordinates:\n";
+
+            for(auto p : path)
+            {
+                cout << "("
+                     << p.first
+                     << ","
+                     << p.second
+                     << ") ";
+            }
+
+            cout << endl;
+
+            return;
+        }
+
+        // Explore Neighbors
+        for(int i = 0; i < 4; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if(nx >= 0 &&
+               ny >= 0 &&
+               nx < n &&
+               ny < m &&
+               grid[nx][ny] == 0 &&
+               !visited[nx][ny])
+            {
+                int newG = g[x][y] + 1;
+
+                int newH = heuristic(nx,
+                                     ny,
+                                     destX,
+                                     destY);
+
+                int newF = newG + newH;
+
+                if(newG < g[nx][ny])
+                {
+                    g[nx][ny] = newG;
+
+                    parent[nx][ny] = {x, y};
+
+                    pq.push({newF, {nx, ny}});
+                }
+            }
+        }
+    }
+
+    cout << "\nNo Path Found!\n";
+}
+
+int main()
+{
+
+    
+    cout << "=====================================\n";
+    cout << " TREASURE HUNT GAME USING A* SEARCH\n";
+    cout << "=====================================\n";
+
+    cout << "\nEnter Number of Rows : ";
+    cin >> n;
+
+    cout << "Enter Number of Columns : ";
+    cin >> m;
+
+    grid.resize(n, vector<int>(m));
+
+    cout << "\nEnter Grid Values\n";
+    cout << "0 = Free Path\n";
+    cout << "1 = Obstacle\n\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            cin >> grid[i][j];
+        }
+    }
+
+    displayGrid();
+
+    int startX, startY;
+    int destX, destY;
+
+    cout << "\nEnter Start Position (x y) : ";
+    cin >> startX >> startY;
+
+    cout << "Enter Treasure Position (x y) : ";
+    cin >> destX >> destY;
+
+    // Invalid Position Check
+    if(grid[startX][startY] == 1 ||
+       grid[destX][destY] == 1)
+    {
+        cout << "\nInvalid Start or Destination!\n";
+        return 0;
+    }
+
+    aStar(startX,
+          startY,
+          destX,
+          destY);
+
+    return 0;
+}

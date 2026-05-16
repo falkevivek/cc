@@ -1,0 +1,376 @@
+function evaluateEmployee()
+{
+    // Input Values
+
+
+
+
+
+
+
+
+    var name =
+        document.getElementById("name").value;
+
+    var department =
+        document.getElementById("department").value;
+
+    var attendance =
+        parseInt(
+            document.getElementById("attendance").value
+        );
+
+    var task =
+        parseInt(
+            document.getElementById("task").value
+        );
+
+    var communication =
+        parseInt(
+            document.getElementById("communication").value
+        );
+
+    var teamwork =
+        parseInt(
+            document.getElementById("teamwork").value
+        );
+
+    var punctuality =
+        parseInt(
+            document.getElementById("punctuality").value
+        );
+
+
+
+    // Validation
+
+    if(
+        name == "" ||
+        isNaN(attendance) ||
+        isNaN(task) ||
+        isNaN(communication) ||
+        isNaN(teamwork) ||
+        isNaN(punctuality)
+    )
+
+    {
+        alert("Please fill all fields");
+        return;
+    }
+
+
+
+    // Weighted Score Calculation
+
+    var score =
+
+        (attendance * 0.20) +
+        (task * 0.35) +
+        (communication * 0.15) +
+        (teamwork * 0.15) +
+        (punctuality * 0.15);
+
+
+
+    // Grade Logic
+
+    var grade = "";
+    var category = "";
+    var recommendation = "";
+
+    if(score >= 90)
+    {
+
+        grade = "A+";
+        category = "Leadership Material";
+        recommendation =
+            "Promotion Recommended 🏆";
+    }
+
+    else if(score >= 75)
+    {
+        grade = "A";
+        category = "High Performer";
+        recommendation =
+            "Eligible for Bonus ⭐";
+    }
+
+    else if(score >= 60)
+    {
+        grade = "B";
+        category = "Average Performer";
+        recommendation =
+            "Needs Skill Improvement 👍";
+    }
+
+    else
+    {
+        grade = "C";
+        category = "Low Performer";
+        recommendation =
+            "Training Required ⚠";
+    }
+
+
+
+    // Strength and Weakness Detection
+
+    var strengths = [];
+    var weaknesses = [];
+
+    if(attendance >= 80)
+        strengths.push("Attendance");
+
+    else
+        weaknesses.push("Attendance");
+
+
+    if(task >= 80)
+        strengths.push("Task Completion");
+
+    else
+        weaknesses.push("Task Completion");
+
+
+    if(communication >= 80)
+        strengths.push("Communication");
+
+    else
+        weaknesses.push("Communication");
+
+
+    if(teamwork >= 80)
+        strengths.push("Teamwork");
+
+    else
+        weaknesses.push("Teamwork");
+
+
+    if(punctuality >= 80)
+        strengths.push("Punctuality");
+
+    else
+        weaknesses.push("Punctuality");
+
+
+
+    // Display Result
+
+    document.getElementById("empName").innerHTML =
+        name;
+
+    document.getElementById("empDept").innerHTML =
+        department;
+
+    document.getElementById("score").innerHTML =
+        score.toFixed(2) + "%";
+
+    document.getElementById("grade").innerHTML =
+        grade;
+
+    document.getElementById("category").innerHTML =
+        category;
+
+    document.getElementById("strength").innerHTML =
+        strengths.join(", ");
+
+    document.getElementById("weakness").innerHTML =
+        weaknesses.join(", ");
+
+    document.getElementById("recommendation").innerHTML =
+        recommendation;
+
+
+
+
+    // Dynamic Result Color
+
+    var resultBox =
+        document.getElementById("result");
+
+    if(score >= 90)
+    {
+        resultBox.style.borderLeft =
+            "8px solid green";
+    }
+    
+    else if(score >= 75)
+    {
+        resultBox.style.borderLeft =
+            "8px solid blue";
+    }
+
+    else if(score >= 60)
+    {
+        resultBox.style.borderLeft =
+            "8px solid orange";
+    }
+
+    else
+    {
+        resultBox.style.borderLeft =
+            "8px solid red";
+    }
+
+    resultBox.style.display = "block";
+}
+
+
+
+
+<!DOCTYPE html>
+<html>
+
+
+
+<head>
+    <title>Employee Performance Evaluation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Employee Performance Evaluation System</h1>
+
+        <div class="form-group">
+            <label>Employee Name</label>
+            <input type="text" id="name">
+        </div>
+
+        <div class="form-group">
+            <label>Department</label>
+
+            <select id="department">
+                <option>HR</option>
+                <option>IT</option>
+                <option>Finance</option>
+                <option>Marketing</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Attendance (%)</label>
+            <input type="number" id="attendance" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+            <label>Task Completion (%)</label>
+            <input type="number" id="task" min="0" max="100">
+        </div>
+        
+        <div class="form-group">
+            <label>Communication Skills (%)</label>
+            <input type="number" id="communication" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+            <label>Teamwork (%)</label>
+            <input type="number" id="teamwork" min="0" max="100">
+        </div>
+
+        <div class="form-group">
+            <label>Punctuality (%)</label>
+            <input type="number" id="punctuality" min="0" max="100">
+        </div>
+
+        <button onclick="evaluateEmployee()">
+            Evaluate Performance
+        </button>
+
+        <div id="result">
+
+            <h2>Evaluation Result</h2>
+
+            <p><strong>Employee :</strong> <span id="empName"></span></p>
+
+            <p><strong>Department :</strong> <span id="empDept"></span></p>
+
+            <p><strong>Total Score :</strong> <span id="score"></span></p>
+
+            <p><strong>Grade :</strong> <span id="grade"></span></p>
+
+            <p><strong>Category :</strong> <span id="category"></span></p>
+
+            <p><strong>Strengths :</strong> <span id="strength"></span></p>
+
+            <p><strong>Weaknesses :</strong> <span id="weakness"></span></p>
+
+            <p><strong>Recommendation :</strong> <span id="recommendation"></span></p>
+
+        </div>
+
+    </div>
+
+    <script src="expert.js"></script>
+
+</body>
+
+</html>
+
+body
+{
+    font-family: Arial;
+    background-color: #f2f2f2;
+}
+
+.container
+{
+    width: 500px;
+    margin: auto;
+    margin-top: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h1
+{
+    text-align: center;
+    color: darkblue;
+}
+
+.form-group
+{
+    margin-top: 15px;
+}
+
+label
+{
+    display: block;
+    margin-bottom: 5px;
+}
+
+input,
+select
+{
+    width: 100%;
+    padding: 8px;
+}
+
+button
+{
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: darkblue;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover
+{
+    background-color: blue;
+}
+
+#result
+{
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-left: 5px solid darkblue;
+    display: none;
+}

@@ -1,0 +1,899 @@
+# COMPLETE EXPLANATION OF MERN BLOG DEPLOYMENT ON AWS
+
+This assignment deploys a MERN Stack blog application on AWS using:
+
+| Technology    | Purpose                 |
+| ------------- | ----------------------- |
+| MongoDB Atlas | Database                |
+| Express.js    | Backend framework       |
+| React + Vite  | Frontend                |
+| Node.js       | JavaScript runtime      |
+| Nginx         | Web server              |
+| PM2           | Backend process manager |
+| EC2           | Cloud virtual machine   |
+
+---
+
+# COMPLETE ARCHITECTURE
+
+```text id="xy2kgx"
+User Browser
+      ↓
+Frontend EC2 (Nginx + React)
+      ↓ API Calls
+Backend EC2 (Node + Express)
+      ↓
+MongoDB Atlas Cloud Database
+```
+
+---
+
+# WHY TWO EC2 INSTANCES?
+
+| Instance     | Work                  |
+| ------------ | --------------------- |
+| Frontend EC2 | Hosts React website   |
+| Backend EC2  | Runs Node/Express API |
+
+---
+
+# WHY SEPARATE SERVERS?
+
+Advantages:
+
+✅ Better scalability
+
+✅ Better security
+
+✅ Easier maintenance
+
+✅ Professional deployment architecture
+
+---
+
+# WHAT IS MERN STACK?
+
+## Full Form
+
+| Letter | Technology |
+| ------ | ---------- |
+| M      | MongoDB    |
+| E      | Express.js |
+| R      | React.js   |
+| N      | Node.js    |
+
+---
+
+# WHAT IS NODE.JS?
+
+Node.js allows JavaScript to run outside browser.
+
+Without Node:
+
+❌ JavaScript only runs in browser
+
+With Node:
+
+✅ Backend APIs possible
+
+✅ Server-side JavaScript possible
+
+---
+
+# WHAT IS EXPRESS.JS?
+
+Express is backend framework for Node.js.
+
+Used to create:
+
+* APIs
+* routes
+* middleware
+* backend server
+
+---
+
+# WHAT IS REACT?
+
+React is frontend JavaScript library.
+
+Used for:
+
+✅ UI creation
+
+✅ components
+
+✅ SPA (Single Page Application)
+
+---
+
+# WHAT IS VITE?
+
+Vite is React build tool.
+
+Used for:
+
+✅ fast development
+
+✅ frontend bundling
+
+✅ production build creation
+
+---
+
+# WHAT IS MONGODB?
+
+MongoDB is NoSQL database.
+
+Stores data in:
+
+```json id="u2jlwm"
+{
+  "title": "Blog",
+  "content": "Hello"
+}
+```
+
+instead of tables.
+
+---
+
+# WHAT IS MONGODB ATLAS?
+
+Cloud-hosted MongoDB service.
+
+Instead of installing database manually:
+
+✅ MongoDB runs online
+
+✅ AWS EC2 connects remotely
+
+---
+
+# WHY USE MONGODB URI?
+
+```text id="4br7h8"
+mongodb+srv://username:password@cluster.mongodb.net/
+```
+
+This URI contains:
+
+| Part                | Meaning         |
+| ------------------- | --------------- |
+| username            | DB username     |
+| password            | DB password     |
+| cluster.mongodb.net | database server |
+
+---
+
+# BACKEND DEPLOYMENT EXPLAINED
+
+---
+
+# STEP 1 — CONNECT TO EC2
+
+```bash id="o3xtb2"
+ssh -i blog.pem ubuntu@BACKEND_PUBLIC_IP
+```
+
+---
+
+# WHAT HAPPENS HERE?
+
+SSH:
+
+✅ encrypts connection
+
+✅ authenticates using PEM key
+
+✅ opens remote terminal
+
+---
+
+# WHY `ubuntu`?
+
+Ubuntu AMI default username is:
+
+```text id="aik14i"
+ubuntu
+```
+
+---
+
+# WHY `-i`?
+
+Specifies identity/private key.
+
+---
+
+# STEP 2 — UPDATE UBUNTU
+
+```bash id="sx4ww7"
+sudo apt update -y
+```
+
+---
+
+# BREAKDOWN
+
+| Part   | Meaning              |
+| ------ | -------------------- |
+| sudo   | run as admin         |
+| apt    | package manager      |
+| update | refresh package list |
+| -y     | auto yes             |
+
+---
+
+# WHAT IS `sudo`?
+
+## Full Form
+
+```text id="m5r90u"
+Super User DO
+```
+
+Runs command with administrator privileges.
+
+---
+
+# WHAT IS `apt`?
+
+## Full Form
+
+```text id="qnpbnx"
+Advanced Package Tool
+```
+
+Ubuntu package manager.
+
+Used to install software.
+
+---
+
+# WHY UPDATE REQUIRED?
+
+Refreshes latest package information.
+
+Without it:
+
+❌ old packages
+
+❌ installation errors
+
+---
+
+# STEP 3 — INSTALL GIT AND CURL
+
+```bash id="kwykb4"
+sudo apt install git curl -y
+```
+
+---
+
+# WHAT IS GIT?
+
+Version control system.
+
+Used to clone GitHub repositories.
+
+---
+
+# WHAT IS CURL?
+
+Tool for downloading data from internet.
+
+Used here to download Node.js setup script.
+
+---
+
+# STEP 4 — INSTALL NODE.JS
+
+```bash id="ktkjmt"
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+```
+
+---
+
+# BREAKDOWN
+
+| Part | Meaning          |
+| ---- | ---------------- |
+| curl | download content |
+| -f   | fail silently    |
+| -s   | silent mode      |
+| -S   | show errors      |
+| -L   | follow redirects |
+
+---
+
+# WHAT DOES `|` PIPE DO?
+
+Takes output from left command and gives to right command.
+
+Example:
+
+```text id="vq0c4s"
+curl output → bash execution
+```
+
+---
+
+# WHAT IS `bash`?
+
+Linux shell interpreter.
+
+Executes commands/scripts.
+
+---
+
+# WHAT IS LTS?
+
+## Full Form
+
+```text id="lzsv3t"
+Long Term Support
+```
+
+Stable Node.js version.
+
+---
+
+# INSTALL NODE
+
+```bash id="mpqygv"
+sudo apt install nodejs -y
+```
+
+Installs:
+
+✅ node
+
+✅ npm
+
+---
+
+# WHAT IS NPM?
+
+## Full Form
+
+```text id="3gm0n6"
+Node Package Manager
+```
+
+Used to install JavaScript packages.
+
+---
+
+# CHECK INSTALLATION
+
+```bash id="4ybv5g"
+node -v
+npm -v
+```
+
+---
+
+# WHAT DOES `-v` MEAN?
+
+```text id="jbd7e4"
+version
+```
+
+Displays installed version.
+
+---
+
+# STEP 5 — CLONE REPOSITORY
+
+```bash id="87i4m0"
+git clone https://github.com/USERNAME/REPO.git
+```
+
+---
+
+# WHAT DOES CLONE MEAN?
+
+Copies GitHub repository into EC2.
+
+---
+
+# STEP 6 — INSTALL DEPENDENCIES
+
+```bash id="wlu9oz"
+npm install
+```
+
+Reads:
+
+```text id="xj2w89"
+package.json
+```
+
+and installs all required packages.
+
+Example:
+
+* express
+* mongoose
+* cors
+
+---
+
+# WHAT IS package.json?
+
+Project metadata/configuration file.
+
+Contains:
+
+* dependencies
+* scripts
+* versions
+
+---
+
+# STEP 7 — CREATE `.env`
+
+```bash id="i7f3q5"
+nano .env
+```
+
+---
+
+# WHAT IS `.env`?
+
+Stores environment variables.
+
+Used for:
+
+✅ secrets
+
+✅ configuration
+
+✅ API URLs
+
+---
+
+# WHY USE `.env`?
+
+Avoids hardcoding sensitive data.
+
+---
+
+# WHAT IS `nano`?
+
+Terminal text editor.
+
+---
+
+# SAVE COMMANDS IN NANO
+
+| Shortcut | Purpose |
+| -------- | ------- |
+| CTRL + O | Save    |
+| ENTER    | Confirm |
+| CTRL + X | Exit    |
+
+---
+
+# WHAT IS `PORT=5000`?
+
+Backend server runs on port 5000.
+
+---
+
+# WHY `process.env.MONGODB_URI`?
+
+Node reads environment variables using:
+
+```javascript id="zw3v24"
+process.env.VARIABLE_NAME
+```
+
+---
+
+# STEP 8 — INSTALL PM2
+
+```bash id="r3zbk6"
+sudo npm install -g pm2
+```
+
+---
+
+# WHAT IS PM2?
+
+Process manager for Node.js apps.
+
+Keeps backend running continuously.
+
+---
+
+# WHY PM2 REQUIRED?
+
+Without PM2:
+
+❌ app stops after terminal closes
+
+With PM2:
+
+✅ auto restart
+
+✅ background execution
+
+✅ crash recovery
+
+---
+
+# WHAT DOES `-g` MEAN?
+
+```text id="6x0a3y"
+global install
+```
+
+Install package system-wide.
+
+---
+
+# START BACKEND
+
+```bash id="6n6fh3"
+pm2 start src/server.js --name blog-backend
+```
+
+---
+
+# BREAKDOWN
+
+| Part          | Meaning             |
+| ------------- | ------------------- |
+| pm2 start     | start app           |
+| src/server.js | entry file          |
+| --name        | custom process name |
+
+---
+
+# CHECK PM2
+
+```bash id="k9r6po"
+pm2 list
+```
+
+Shows running apps.
+
+---
+
+# VIEW LOGS
+
+```bash id="9qz7mg"
+pm2 logs
+```
+
+Used for debugging backend errors.
+
+---
+
+# WHAT IS `pm2 save`?
+
+Saves current running processes.
+
+---
+
+# WHAT IS `pm2 startup`?
+
+Configures PM2 auto-start after reboot.
+
+Without it:
+
+❌ app stops after server restart
+
+---
+
+# FRONTEND DEPLOYMENT EXPLAINED
+
+---
+
+# INSTALL NGINX
+
+```bash id="9kz9yq"
+sudo apt install nginx -y
+```
+
+---
+
+# WHAT IS NGINX?
+
+Web server.
+
+Used to:
+
+✅ serve React frontend
+
+✅ handle HTTP requests
+
+---
+
+# WHY NOT RUN REACT USING `npm run dev`?
+
+Because dev server is not production-ready.
+
+Production uses:
+
+✅ built static files
+
+✅ nginx web server
+
+---
+
+# WHAT IS BUILD?
+
+```bash id="6s3hvk"
+npm run build
+```
+
+Converts React source code into optimized static files.
+
+Creates:
+
+```text id="kkh5st"
+dist/
+```
+
+folder.
+
+---
+
+# WHY COPY TO `/var/www/html`?
+
+Nginx serves website files from there.
+
+---
+
+# COMMAND
+
+```bash id="2zov2v"
+sudo cp -r dist/* /var/www/html/
+```
+
+---
+
+# BREAKDOWN
+
+| Part          | Meaning                 |
+| ------------- | ----------------------- |
+| cp            | copy                    |
+| -r            | recursive               |
+| dist/*        | all build files         |
+| /var/www/html | nginx website directory |
+
+---
+
+# WHAT IS `rm -rf`?
+
+```bash id="zqg80d"
+sudo rm -rf /var/www/html/*
+```
+
+---
+
+# BREAKDOWN
+
+| Part | Meaning   |
+| ---- | --------- |
+| rm   | remove    |
+| -r   | recursive |
+| -f   | force     |
+
+Deletes old website files.
+
+---
+
+# START NGINX
+
+```bash id="x7b0zx"
+sudo systemctl start nginx
+```
+
+---
+
+# WHAT IS systemctl?
+
+Controls Linux services.
+
+---
+
+# ENABLE NGINX
+
+```bash id="8f19cq"
+sudo systemctl enable nginx
+```
+
+Starts nginx automatically after reboot.
+
+---
+
+# CHECK STATUS
+
+```bash id="0g6ifq"
+sudo systemctl status nginx
+```
+
+Shows:
+
+✅ running
+
+✅ stopped
+
+✅ failed
+
+---
+
+# FRONTEND `.env`
+
+```env id="jhmpt4"
+VITE_API_URL=http://BACKEND_IP:5000/api
+```
+
+---
+
+# WHY IMPORTANT?
+
+Frontend must know backend API location.
+
+---
+
+# WHY `/api`?
+
+Because backend routes start with:
+
+```javascript id="v0b0jl"
+app.use("/api", routes)
+```
+
+---
+
+# WHY REBUILD AFTER `.env` CHANGE?
+
+Vite embeds environment variables during build time.
+
+So after changing `.env`:
+
+```bash id="n1o2m7"
+npm run build
+```
+
+is mandatory.
+
+---
+
+# SECURITY GROUP EXPLANATION
+
+| Port | Purpose      |
+| ---- | ------------ |
+| 22   | SSH          |
+| 80   | HTTP website |
+| 5000 | Backend API  |
+
+---
+
+# WHY PORT 80?
+
+Default HTTP web traffic.
+
+---
+
+# WHY PORT 5000?
+
+Backend Express server port.
+
+---
+
+# WHY "MY IP" FOR SSH?
+
+More secure.
+
+Only your laptop can SSH.
+
+---
+
+# WHY "ANYWHERE" FOR 80?
+
+Website should be publicly accessible.
+
+---
+
+# COMPLETE REQUEST FLOW
+
+```text id="c3fg1q"
+Browser
+   ↓
+Frontend EC2 (Nginx)
+   ↓ API Request
+Backend EC2 (Express)
+   ↓
+MongoDB Atlas
+```
+
+---
+
+# MOST IMPORTANT VIVA QUESTIONS
+
+---
+
+# What is PM2?
+
+Node.js process manager.
+
+---
+
+# Why use PM2?
+
+Keeps backend running in background.
+
+---
+
+# What is Nginx?
+
+High-performance web server.
+
+---
+
+# Why use Nginx?
+
+To serve frontend production files.
+
+---
+
+# Difference Between Frontend and Backend?
+
+| Frontend | Backend        |
+| -------- | -------------- |
+| UI       | Business logic |
+| React    | Node/Express   |
+
+---
+
+# Why `npm install`?
+
+Installs dependencies from package.json.
+
+---
+
+# Why `.env` file?
+
+Stores configuration and secrets.
+
+---
+
+# Why rebuild React after `.env` change?
+
+Because Vite embeds variables during build.
+
+---
+
+# Difference Between Development and Production?
+
+| Development | Production          |
+| ----------- | ------------------- |
+| npm run dev | nginx serving build |
+| slower      | optimized           |
+
+---
+
+# Why Use MongoDB Atlas?
+
+Cloud-hosted database service.
+
+---
+
+# Why Port 5000?
+
+Backend server listens there.
+
+---
+
+# Difference Between `start` and `enable` in systemctl?
+
+| Command | Purpose            |
+| ------- | ------------------ |
+| start   | start now          |
+| enable  | start after reboot |

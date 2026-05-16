@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Based Chatbot</title>
+
+    <style>
+
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        #chatBox {
+            width: 500px;
+            height: 400px;
+            border: 1px solid black;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 400px;
+            padding: 8px;
+        }
+
+        button {
+            padding: 8px 15px;
+        }
+
+        .user {
+            color: blue;
+            margin: 5px 0;
+        }
+
+        .bot {
+            color: green;
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <h2>Customer Support Chatbot</h2>
+
+    <div id="chatBox">
+
+        <div class="bot">
+            Bot : Hello! Ask me about order, payment, refund, delivery, or support.
+        </div>
+
+    </div>
+
+    <input
+        type="text"
+        id="userInput"
+        placeholder="Enter message"
+    >
+
+    <button onclick="sendMessage()">
+        Send
+    </button>
+
+
+    <script>
+
+        // ---------------- CHATBOT RESPONSE LOGIC ----------------
+
+        function getBotResponse(message)
+        {
+            let msg = message.toLowerCase();
+
+            // Greeting
+            if (
+                msg.includes("hello")
+                ||
+                msg.includes("hi")
+            )
+            {
+                return "Hello! How can I help you?";
+            }
+
+            // Order Query
+            else if (
+                msg.includes("order")
+                ||
+                msg.includes("track")
+            )
+            {
+                return "Your order is currently being processed.";
+            }
+
+            // Payment Query
+            else if (
+                msg.includes("payment")
+                ||
+                msg.includes("upi")
+                ||
+                msg.includes("card")
+            )
+            {
+                return "We support UPI, Credit Card, Debit Card, and Net Banking.";
+            }
+
+            // Refund Query
+            else if (
+                msg.includes("refund")
+            )
+            {
+                return "Refund will be credited within 5 working days.";
+            }
+
+            // Delivery Query
+            else if (
+                msg.includes("delivery")
+                ||
+                msg.includes("shipping")
+            )
+            {
+                return "Delivery usually takes 3 to 5 days.";
+            }
+
+            // Return Policy
+            else if (
+                msg.includes("return")
+            )
+            {
+                return "Products can be returned within 7 days.";
+            }
+
+            // Support Query
+
+            else if (
+                msg.includes("support")
+                ||
+                msg.includes("help")
+            )
+            {
+                return "Please contact support@shop.com";
+            }
+
+            // Thank You
+            else if (
+                msg.includes("thank")
+            )
+            {
+                return "You are welcome!";
+            }
+
+            // Exit
+            else if (
+                msg.includes("bye")
+                ||
+                msg.includes("exit")
+            )
+            {
+                return "Thank you for using chatbot.";
+            }
+
+            // Default Response
+            else
+            {
+                return "Sorry, I could not understand your query.";
+            }
+        }
+
+
+
+        // ---------------- SEND MESSAGE FUNCTION ----------------
+
+        function sendMessage()
+        {
+            let input =
+                document.getElementById("userInput");
+
+            let chatBox =
+                document.getElementById("chatBox");
+
+            let userMessage =
+                input.value.trim();
+
+            // Empty Input Check
+            if(userMessage === "")
+            {
+                return;
+            }
+
+            
+
+            // Display User Message
+            let userDiv =
+                document.createElement("div");
+
+            userDiv.className = "user";
+
+            userDiv.innerHTML =
+                "<b>You :</b> " + userMessage;
+
+            chatBox.appendChild(userDiv);
+
+
+            // Get Bot Response
+            let botResponse =
+                getBotResponse(userMessage);
+
+
+            // Display Bot Response
+            let botDiv =
+                document.createElement("div");
+
+            botDiv.className = "bot";
+
+            botDiv.innerHTML =
+                "<b>Bot :</b> " + botResponse;
+
+            chatBox.appendChild(botDiv);
+
+
+
+            // Auto Scroll
+            chatBox.scrollTop =
+                chatBox.scrollHeight;
+
+            
+
+            // Clear Input Box
+            input.value = "";
+        }
+
+
+        
+
+        // ---------------- ENTER KEY SUPPORT ----------------
+
+        document
+            .getElementById("userInput")
+            .addEventListener(
+                "keypress",
+                function(event)
+                {
+                    if(event.key === "Enter")
+                    {
+                        sendMessage();
+                    }
+                }
+            );
+    
+    
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// ---------- Selection Sort ----------
+void selectionSort(vector<int>& arr) {
+    int n = arr.size();
+    for(int i = 0; i < n - 1; i++) {
+        int minIndex = i;
+        for(int j = i + 1; j < n; j++) {
+            if(arr[j] < arr[minIndex])
+                minIndex = j;
+        }
+        swap(arr[i], arr[minIndex]);
+    }
+
+    cout << "Sorted Array: ";
+    for(int x : arr) cout << x << " ";
+    cout << endl;
+}
+
+// ---------- Prim's MST ----------
+int primMST(vector<vector<int>>& graph) {
+    int n = graph.size();
+    vector<int> key(n, INT_MAX);
+    vector<bool> mst(n, false);
+
+    key[0] = 0;
+    int cost = 0;
+
+    for(int i = 0; i < n; i++) {
+        int u = -1;
+        for(int j = 0; j < n; j++)
+            if(!mst[j] && (u == -1 || key[j] < key[u]))
+                u = j;
+
+        mst[u] = true;
+        cost += key[u];
+
+        for(int v = 0; v < n; v++) {
+            if(graph[u][v] && !mst[v] && graph[u][v] < key[v])
+                key[v] = graph[u][v];
+        }
+    }
+    return cost;
+}
+
+// ---------- Dijkstra ----------
+vector<int> dijkstra(vector<vector<pair<int,int>>>& adj, int src) {
+    int n = adj.size();
+    vector<int> dist(n, INT_MAX);
+    dist[src] = 0;
+
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
+    pq.push({0, src});
+
+    while(!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+
+        for(auto [v, w] : adj[u]) {
+            if(dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
+}
+
+// ---------- FCFS ----------
+void fcfs(vector<int>& burst) {
+    int n = burst.size();
+    vector<int> waiting(n), turnaround(n);
+
+    waiting[0] = 0;
+    for(int i = 1; i < n; i++)
+        waiting[i] = waiting[i-1] + burst[i-1];
+
+    for(int i = 0; i < n; i++)
+        turnaround[i] = waiting[i] + burst[i];
+
+    cout << "Process  Waiting  Turnaround\n";
+    for(int i = 0; i < n; i++)
+        cout << i << "\t" << waiting[i] << "\t" << turnaround[i] << endl;
+}
+
+// ---------- Kruskal ----------
+int findParent(int x, vector<int>& parent) {
+    if(parent[x] == x) return x;
+    return parent[x] = findParent(parent[x], parent);
+}
+
+void unionSet(int a, int b, vector<int>& parent) {
+    a = findParent(a, parent);
+    b = findParent(b, parent);
+    if(a != b) parent[b] = a;
+}
+
+int kruskal(int n, vector<vector<int>>& edges) {
+    sort(edges.begin(), edges.end());
+    vector<int> parent(n);
+    for(int i = 0; i < n; i++) parent[i] = i;
+
+    int cost = 0;
+
+    for(auto e : edges) {
+        int w = e[0], u = e[1], v = e[2];
+        if(findParent(u, parent) != findParent(v, parent)) {
+            cost += w;
+            unionSet(u, v, parent);
+        }
+    }
+    return cost;
+}
+
+
+
+
+
+
+// ---------- MAIN MENU ----------
+int main() {
+    int choice;
+
+    do {
+        cout << "\n--- MENU ---\n";
+        cout << "1. Selection Sort\n";
+        cout << "2. Prim's MST\n";
+        cout << "3. Dijkstra\n";
+        cout << "4. FCFS Scheduling\n";
+        cout << "5. Kruskal MST\n";
+        cout << "6. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        if(choice == 1) {
+            int n;
+            cout << "Enter size: ";
+            cin >> n;
+            vector<int> arr(n);
+            for(int i = 0; i < n; i++) cin >> arr[i];
+            selectionSort(arr);
+        }
+
+        else if(choice == 2) {
+            int n;
+            cout << "Enter number of vertices: ";
+            cin >> n;
+            vector<vector<int>> graph(n, vector<int>(n));
+
+            cout << "Enter adjacency matrix:\n";
+            for(int i = 0; i < n; i++)
+                for(int j = 0; j < n; j++)
+                    cin >> graph[i][j];
+
+            cout << "MST Cost: " << primMST(graph) << endl;
+        }
+
+        else if(choice == 3) {
+            int n, m;
+            cout << "Enter vertices and edges: ";
+            cin >> n >> m;
+
+            vector<vector<pair<int,int>>> adj(n);
+
+            cout << "Enter edges (u v w):\n";
+            for(int i = 0; i < m; i++) {
+                int u, v, w;
+                cin >> u >> v >> w;
+                adj[u].push_back({v, w});
+                adj[v].push_back({u, w});
+            }
+
+            int src;
+            cout << "Enter source: ";
+            cin >> src;
+
+            vector<int> dist = dijkstra(adj, src);
+
+            cout << "Distances:\n";
+            for(int d : dist) cout << d << " ";
+            cout << endl;
+        }
+
+        else if(choice == 4) {
+            int n;
+            cout << "Enter number of processes: ";
+            cin >> n;
+
+            vector<int> burst(n);
+            cout << "Enter burst times:\n";
+            for(int i = 0; i < n; i++) cin >> burst[i];
+
+            fcfs(burst);
+        }
+
+        else if(choice == 5) {
+            int n, m;
+            cout << "Enter vertices and edges: ";
+            cin >> n >> m;
+
+            vector<vector<int>> edges(m, vector<int>(3));
+
+            cout << "Enter edges (weight u v):\n";
+            for(int i = 0; i < m; i++)
+                cin >> edges[i][0] >> edges[i][1] >> edges[i][2];
+            
+            cout << "MST Cost: " << kruskal(n, edges) << endl;
+        }
+
+    } while(choice != 6);
+
+    return 0;
+}

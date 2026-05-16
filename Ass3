@@ -1,0 +1,234 @@
+#include <iostream>
+using namespace std;
+
+int board[20][20];
+int n;
+
+// ---------- DISPLAY BOARD ----------
+void printBoard()
+{
+    cout << "\nSolution Board:\n\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < n; j++)
+        {
+            if(board[i][j] == 1)
+                cout << " Q ";
+            else
+                cout << " . ";
+        }
+        cout << endl;
+    }
+
+    cout << endl;
+}
+
+// ---------- SAFE CHECK FOR BACKTRACKING ----------
+bool isSafe(int row, int col)
+{
+    // Check column
+    for(int i = 0; i < row; i++)
+    {
+        if(board[i][col] == 1)
+            return false;
+    }
+
+    // Check left diagonal
+    for(int i = row, j = col;
+        i >= 0 && j >= 0;
+        i--, j--)
+    {
+        if(board[i][j] == 1)
+            return false;
+    }
+
+    // Check right diagonal
+    for(int i = row, j = col;
+        i >= 0 && j < n;
+        i--, j++)
+    {
+        if(board[i][j] == 1)
+            return false;
+    }
+
+    return true;
+}
+
+// ---------- BACKTRACKING METHOD ----------
+bool solveBacktracking(int row)
+{   
+    // Base condition
+    if(row == n)
+    {
+        printBoard();
+        return true;
+    }
+
+    // Try every column
+    for(int col = 0; col < n; col++)
+    {
+        if(isSafe(row, col))
+        {
+            // Place queen
+            board[row][col] = 1;
+
+            // Recursive call
+            if(solveBacktracking(row + 1))
+                return true;
+
+            // Backtrack
+            board[row][col] = 0;
+        }
+    }
+
+    return false;
+}
+
+// ---------- ARRAYS FOR BRANCH & BOUND ----------
+int columnUsed[20];
+int leftDiagonal[40];
+int rightDiagonal[40];
+
+// ---------- BRANCH AND BOUND METHOD ----------
+bool solveBranchBound(int row)
+{
+    // Base condition
+    if(row == n)
+    {
+        printBoard();
+        return true;
+    }
+
+    for(int col = 0; col < n; col++)
+    {
+        // Check constraints quickly
+        if(!columnUsed[col]
+           &&
+           !leftDiagonal[row - col + n - 1]
+           &&
+           !rightDiagonal[row + col])
+        {
+            // Place queen
+            board[row][col] = 1;
+
+            // Mark arrays
+            columnUsed[col] = 1;
+
+            leftDiagonal[row - col + n - 1] = 1;
+
+            rightDiagonal[row + col] = 1;
+
+            // Recursive call
+            if(solveBranchBound(row + 1))
+                return true;
+
+            // Backtrack
+            board[row][col] = 0;
+
+            columnUsed[col] = 0;
+
+            leftDiagonal[row - col + n - 1] = 0;
+
+            rightDiagonal[row + col] = 0;
+        }
+    }
+
+    return false;
+}
+
+// ---------- RESET BOARD ----------
+void resetBoard()
+{
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < n; j++)
+        {
+            board[i][j] = 0;
+        }
+    }
+}
+
+// ---------- RESET ARRAYS ----------
+void resetArrays()
+{
+    for(int i = 0; i < 20; i++)
+    {
+        columnUsed[i] = 0;
+    }
+
+    for(int i = 0; i < 40; i++)
+    {
+        leftDiagonal[i] = 0;
+        rightDiagonal[i] = 0;
+    }
+}
+
+// ---------- MAIN FUNCTION ----------
+int main()
+{
+    int choice;
+
+    cout << "=====================================\n";
+    cout << "      N-Queens Problem Solver\n";
+    cout << "=====================================\n";
+
+    cout << "\nEnter Value of N : ";
+    cin >> n;
+
+    do
+    {
+        cout << "\n=====================================";
+        cout << "\n               MENU";
+        cout << "\n=====================================";
+
+        cout << "\n1. Solve Using Backtracking";
+        cout << "\n2. Solve Using Branch and Bound";
+        cout << "\n3. Exit";
+
+        cout << "\n\nEnter Your Choice : ";
+        cin >> choice;
+
+        resetBoard();
+
+        switch(choice)
+        {
+            case 1:
+
+                cout << "\nBacktracking Solution:\n";
+
+                if(!solveBacktracking(0))
+                {
+                    cout << "\nSolution Does Not Exist!\n";
+                }
+
+                break;
+
+            case 2:
+
+                cout << "\nBranch and Bound Solution:\n";
+
+                resetArrays();
+
+                if(!solveBranchBound(0))
+                {
+                    cout << "\nSolution Does Not Exist!\n";
+                }
+
+                break;
+
+            case 3:
+
+                cout << "\nProgram Terminated Successfully!\n";
+
+                break;
+
+            default:
+
+                cout << "\nInvalid Choice!\n";
+        }
+
+    } while(choice != 3);
+
+    return 0;
+}

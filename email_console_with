@@ -1,0 +1,100 @@
+Apex Class (Dynamic Parameters + Attachment)
+Apex Class Name
+DynamicEmailSender
+
+Code:
+
+public class DynamicEmailSender {
+
+    public static void sendEmailWithAttachment(
+
+        String toAddress,
+        String subject,
+        String body,
+        String fileName,
+        String fileContent
+
+    ) {
+
+        try {
+
+            // Create Email Object
+            Messaging.SingleEmailMessage mail =
+                new Messaging.SingleEmailMessage();
+
+            // Set Recipient
+            mail.setToAddresses(
+                new List<String>{toAddress}
+            );
+
+            // Set Subject
+            mail.setSubject(subject);
+
+            // Set Email Body
+            mail.setPlainTextBody(body);
+
+            // Create Attachment
+            Messaging.EmailFileAttachment attachment =
+                new Messaging.EmailFileAttachment();
+
+            attachment.setFileName(fileName);
+
+            attachment.setBody(
+                Blob.valueOf(fileContent)
+            );
+
+            // Attach File
+            mail.setFileAttachments(
+                new Messaging.EmailFileAttachment[] {attachment}
+            );
+
+            // Send Email
+            Messaging.sendEmail(
+                new Messaging.SingleEmailMessage[] {mail}
+            );
+
+            System.debug('Email Sent Successfully');
+
+        }
+
+        catch(Exception e) {
+
+            System.debug('Error : ' + e.getMessage());
+
+        }
+    }
+}
+Execute Anonymous Code
+
+Open:
+
+Developer Console
+
+Then:
+
+Debug → Open Execute Anonymous Window
+
+Run:
+
+DynamicEmailSender.sendEmailWithAttachment(
+
+    'yourgmail@gmail.com',
+
+    'Salesforce Practical Email',
+
+    'Hello, this email is sent using dynamic Apex parameters.',
+
+    'sample.txt',
+
+    'This is attachment data from Salesforce.'
+
+);
+What Happens Here
+Recipient
+yourgmail@gmail.com
+Subject
+Salesforce Practical Email
+Body
+Hello, this email is sent using dynamic Apex parameters.
+File Name
+sample.txt

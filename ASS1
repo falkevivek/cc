@@ -1,0 +1,266 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class EmergencyRoutePlanner {
+
+    int vertices;
+
+    vector<vector<int>> adj;
+
+public:
+
+    EmergencyRoutePlanner(int v) {
+
+        vertices = v;
+
+        adj.resize(v);
+    }
+
+    // Add road without duplicates
+    void addRoad(int u, int v) {
+
+        // Invalid node check
+        if(u >= vertices || v >= vertices ||
+           u < 0 || v < 0) {
+
+            cout << "Invalid Locations!\n";
+            return;
+        }
+
+        // Duplicate edge check
+        for(int neighbor : adj[u]) {
+
+            if(neighbor == v) {
+
+                cout << "Road Already Exists Between "
+                     << u << " and " << v << endl;
+
+                return;
+            }
+        }
+
+        // Undirected graph
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    // Display graph
+    void displayMap() {
+
+        cout << "\n===== Emergency Route Map =====\n";
+
+        for(int i = 0; i < vertices; i++) {
+
+            cout << i << " -> ";
+
+            for(int neighbor : adj[i]) {
+
+                cout << neighbor << " ";
+            }
+
+            cout << endl;
+        }
+    }
+
+    // Recursive DFS for all paths
+    void findAllPaths(int current,
+                      int destination,
+                      vector<bool> &visited,
+                      vector<int> &path,
+                      int &count) {
+
+        visited[current] = true;
+
+        path.push_back(current);
+
+        // Destination reached
+        if(current == destination) {
+
+            count++;
+
+            cout << "Path "
+                 << count
+                 << " : ";
+
+            for(int node : path) {
+
+                cout << node << " ";
+            }
+
+            cout << endl;
+        }
+        else {
+
+            for(int neighbor : adj[current]) {
+
+                if(!visited[neighbor]) {
+
+                    findAllPaths(neighbor,
+                                 destination,
+                                 visited,
+                                 path,
+                                 count);
+                }
+            }
+        }
+
+        // Backtracking
+        path.pop_back();
+
+        visited[current] = false;
+    }
+
+    // Wrapper function
+    void showAllPaths(int source,
+                      int destination) {
+
+        vector<bool> visited(vertices, false);
+
+        vector<int> path;
+
+        int count = 0;
+
+        cout << "\n===== All Possible Rescue Paths =====\n";
+
+        findAllPaths(source,
+                     destination,
+                     visited,
+                     path,
+                     count);
+
+        if(count == 0) {
+
+            cout << "No Path Exists!\n";
+        }
+        else {
+
+            cout << "\nTotal Number of Paths = "
+                 << count << endl;
+        }
+    }
+
+    // BFS shortest path
+    void shortestPath(int source,
+                      int destination) {
+
+        vector<bool> visited(vertices, false);
+
+        vector<int> parent(vertices, -1);
+
+        queue<int> q;
+
+        visited[source] = true;
+
+        q.push(source);
+
+        while(!q.empty()) {
+
+            int current = q.front();
+
+            q.pop();
+
+            for(int neighbor : adj[current]) {
+
+                if(!visited[neighbor]) {
+
+                    visited[neighbor] = true;
+
+                    parent[neighbor] = current;
+
+                    q.push(neighbor);
+                }
+            }
+        }
+
+        // No path exists
+        if(!visited[destination]) {
+
+            cout << "\nNo Shortest Path Exists!\n";
+            return;
+        }
+
+        // Reconstruct path
+        vector<int> path;
+
+        int current = destination;
+
+        while(current != -1) {
+
+            path.push_back(current);
+
+            current = parent[current];
+        }
+
+        reverse(path.begin(), path.end());
+
+        cout << "\n===== Shortest Rescue Path =====\n";
+
+        for(int node : path) {
+
+            cout << node << " ";
+        }
+
+        cout << endl;
+
+        cout << "\nMinimum Roads Required = "
+             << path.size() - 1
+             << endl;
+    }
+};
+
+int main() {
+
+    int vertices, edges;
+
+    cout << "====================================\n";
+    cout << " SMART EMERGENCY ROUTE PLANNER\n";
+    cout << " Using BFS and Recursive DFS\n";
+    cout << "====================================\n";
+
+    cout << "\nEnter Number of Locations : ";
+
+    cin >> vertices;
+
+    EmergencyRoutePlanner graph(vertices);
+
+    cout << "Enter Number of Roads : ";
+
+    cin >> edges;
+
+    cout << "\nEnter Connected Locations\n";
+
+    for(int i = 0; i < edges; i++) {
+
+        int u, v;
+
+        cout << "Road "
+             << i + 1
+             << " : ";
+
+        cin >> u >> v;
+
+        graph.addRoad(u, v);
+    }
+
+    graph.displayMap();
+
+    int source, destination;
+
+    cout << "\nEnter Source Location : ";
+
+    cin >> source;
+
+    cout << "Enter Destination Location : ";
+
+    cin >> destination;
+
+    // DFS
+    graph.showAllPaths(source,
+                       destination);
+
+    // BFS
+    graph.shortestPath(source,
+                       destination);
+        
+    return 0;
+}
